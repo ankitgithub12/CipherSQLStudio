@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const { connectMongoDB } = require('./config/db');
@@ -20,7 +21,7 @@ app.use('/api/execute', executionRoutes);
 app.use('/api/hint', hintRoutes);
 app.use('/api/progress', progressRoutes);
 
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'CipherSQLStudio Backend is running' });
 });
 

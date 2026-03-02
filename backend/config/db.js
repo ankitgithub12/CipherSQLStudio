@@ -2,23 +2,33 @@ const mongoose = require('mongoose');
 const { Pool } = require('pg');
 
 // ─── MongoDB Connection ───────────────────────────────────────────────────────
-const connectMongoDB = async () => {
-  try {
-    if (!process.env.MONGODB_URI) {
-      throw new Error('MONGODB_URI is not defined in the .env file.');
-    }
-    await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 10000,  // give up selecting server after 10s
-      heartbeatFrequencyMS: 10000,      // check server health every 10s
-      socketTimeoutMS: 45000,           // close idle sockets after 45s
-      connectTimeoutMS: 10000,          // TCP connect timeout
-      retryWrites: true,
-      retryReads: true,
-    });
-    console.log('MongoDB (Persistence DB) connected successfully');
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
+const connectMongoDB = async (retries = 3, delay = 3000) => {
+  if (!process.env.MONGODB_URI) {
+    console.error('MONGODB_URI is not defined in the .env file.');
     process.exit(1);
+  }
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await mongoose.connect(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 10000,  // give up selecting server after 10s
+        heartbeatFrequencyMS: 10000,      // check server health every 10s
+        socketTimeoutMS: 45000,           // close idle sockets after 45s
+        connectTimeoutMS: 10000,          // TCP connect timeout
+        retryWrites: true,
+        retryReads: true,
+      });
+      console.log('MongoDB (Persistence DB) connected successfully');
+      return;
+    } catch (err) {
+      console.error(`MongoDB connection attempt ${attempt}/${retries} failed:`, err.message);
+      if (attempt < retries) {
+        console.log(`Retrying MongoDB connection in ${delay / 1000}s...`);
+        await new Promise(res => setTimeout(res, delay));
+      } else {
+        console.error('MongoDB connection failed after all retries. Exiting.');
+        process.exit(1);
+      }
+    }
   }
 };
 
@@ -29,10 +39,18 @@ let pgPool;
 if (process.env.DATABASE_URL || process.env.POSTGRES_URI) {
   pgPool = new Pool({
     connectionString: process.env.DATABASE_URL || process.env.POSTGRES_URI,
-    ssl: { rejectUnauthorized: false }, // Required for Supabase / hosted Postgres
-    connectionTimeoutMillis: 10000,     // fail fast if DB unreachable
-    idleTimeoutMillis: 30000,           // release idle clients after 30s
-    max: 5,                             // keep pool small for Supabase free tier
+    ssl: { rejectUnauthorized: false },       // Required for Supabase / hosted Postgres
+    connectionTimeoutMillis: 10000,           // fail fast if DB unreachable
+    idleTimeoutMillis: 30000,                 // release idle clients after 30s
+    keepAlive: true,                          // send TCP keep-alive probes
+    keepAliveInitialDelayMillis: 10000,       // start probing after 10s of inactivity
+    max: 5,                                   // keep pool small for Supabase free tier
+  });
+
+  // Prevent unhandled 'error' events from crashing the process when
+  // Supabase closes an idle connection unexpectedly (ECONNRESET).
+  pgPool.on('error', (err) => {
+    console.error('DB error:', err.message);
   });
 } else {
   console.warn('DATABASE_URL or POSTGRES_URI not set in .env. Postgres will not work.');
