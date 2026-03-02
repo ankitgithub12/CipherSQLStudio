@@ -1,0 +1,68 @@
+@use "styles/variables" as *;
+@use "styles/mixins" as *;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-family;
+  font-size: $font-size-base;
+  background-color: $bg-color;
+  color: $text-primary;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+}
+
+// Layout wrapper
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid $border-color;
+  background-color: rgba($surface-color, 0.5);
+  margin-bottom: 2rem;
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $primary-color;
+  }
+}
+
+.container {
+  width: 100%;
+  padding: 0 1rem;
+  margin: 0 auto;
+
+  @include mobile-up {
+    max-width: 100%;
+  }
+
+  @include tablet-up {
+    max-width: 720px;
+  }
+
+  @include laptop-up {
+    max-width: 1100px;
+  }
+
+  @include desktop-up {
+    max-width: 1200px;
+  }
+}
+
+.main-content {
+  flex: 1;
+  padding-bottom: 3rem;
+}

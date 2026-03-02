@@ -1,0 +1,67 @@
+@use "variables" as *;
+
+// Responsive Mixins
+@mixin mobile-up {
+  @media (min-width: $bp-mobile) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: $bp-tablet) {
+    @content;
+  }
+}
+
+@mixin laptop-up {
+  @media (min-width: $bp-laptop) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: $bp-desktop) {
+    @content;
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Button Reset Mixin
+@mixin button-reset {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  outline: none;
+}

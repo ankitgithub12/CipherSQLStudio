@@ -1,0 +1,384 @@
+@use "sass:color";
+@use "variables" as *;
+@use "mixins" as *;
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 8rem);
+  gap: 1rem;
+
+  &__header {
+    background-color: $surface-color;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid $border-color;
+    @include flex-between;
+  }
+
+  &__back {
+    color: $primary-color;
+    font-weight: 500;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    flex: 1;
+    min-height: 0; // vital for flex scrolling
+
+    @include laptop-up {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 0;
+
+    &--editor {
+      gap: 1rem;
+    }
+  }
+}
+
+.panel {
+  background-color: rgba($surface-color, 0.5);
+  border: 1px solid rgba($border-color, 0.8);
+  border-radius: 12px;
+  padding: 1.5rem;
+  overflow-y: auto;
+
+  // Custom Scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 3px;
+  }
+
+  &__section {
+    background-color: rgba($bg-color, 0.6);
+    border: 1px solid rgba($border-color, 0.5);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: $text-secondary;
+    margin-bottom: 0.75rem;
+  }
+
+  &__text {
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+}
+
+.schema-table {
+  background-color: $surface-color;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+
+  &__name {
+    padding: 0.5rem 1rem;
+    background-color: rgba($bg-color, 0.8);
+    border-bottom: 1px solid $border-color;
+    font-family: $font-mono;
+    color: $secondary-color;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+  }
+
+  th {
+    background-color: rgba($bg-color, 0.6);
+    color: $text-secondary;
+    font-weight: 600;
+    border-bottom: 1px solid rgba($border-color, 0.5);
+
+    .data-type {
+      font-family: $font-mono;
+      font-size: 0.75rem;
+      font-style: italic;
+      color: rgba($text-muted, 0.7);
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba($border-color, 0.3);
+
+    &:hover {
+      background-color: rgba($surface-hover, 0.3);
+    }
+  }
+
+  &--expected {
+    th {
+      color: #fcd34d; // amber
+    }
+
+    tbody tr:hover {
+      background-color: rgba(#f59e0b, 0.1);
+    }
+  }
+}
+
+// Right column Editor Components
+.editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: $surface-color;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.editor-header {
+  @include flex-between;
+  padding: 0.75rem 1rem;
+  background-color: rgba($bg-color, 0.8);
+  border-bottom: 1px solid $border-color;
+
+  h3 {
+    margin: 0;
+    color: $text-muted;
+  }
+}
+
+.editor-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn {
+  @include button-base;
+
+  &--hint {
+    background-color: rgba($hint-color, 0.1);
+    color: $hint-color;
+    border: 1px solid rgba($hint-color, 0.2);
+
+    &:hover:not(:disabled) {
+      background-color: rgba($hint-color, 0.2);
+    }
+  }
+
+  &--execute {
+    background-color: $primary-color;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: $primary-hover;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba($primary-color, 0.3);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+}
+
+.hint-box {
+  background-color: rgba($hint-color, 0.15);
+  border-bottom: 1px solid rgba($hint-color, 0.3);
+  padding: 1rem;
+  position: relative;
+
+  &__content {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: color.adjust($hint-color, $lightness: 20%);
+
+    strong {
+      color: color.adjust($hint-color, $lightness: 10%);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  &__close {
+    @include button-reset;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: $hint-color;
+
+    &:hover {
+      color: white;
+    }
+  }
+}
+
+.monaco-wrapper {
+  flex: 1;
+  position: relative;
+  min-height: 200px;
+}
+
+// Right column Results Box
+.results-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: $bg-color;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+
+  .editor-header {
+    background-color: rgba($surface-color, 0.8);
+  }
+
+  .row-count {
+    font-family: $font-mono;
+    font-size: 0.75rem;
+    background-color: $border-color;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    color: $text-muted;
+  }
+}
+
+.results-content {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background-color: #1e1e1e; // generic dark table bg
+}
+
+.error-box {
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 6px;
+  background-color: rgba($danger-color, 0.15);
+  border: 1px solid rgba($danger-color, 0.3);
+  color: color.adjust($danger-color, $lightness: 15%);
+  font-family: $font-mono;
+  font-size: 0.875rem;
+
+  strong {
+    color: $danger-color;
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.empty-state {
+  position: absolute;
+  inset: 0;
+  @include flex-center;
+  flex-direction: column;
+  color: $text-secondary;
+  font-family: $font-mono;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem;
+
+  svg {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+}
+
+// Override data-table exclusively for the results output
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #2d2d2d;
+
+    th {
+      padding: 0.75rem 1.25rem;
+      font-weight: 600;
+      color: $text-muted;
+      border-bottom: 1px solid #3d3d3d;
+      border-right: 1px solid #3d3d3d;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+
+  tbody {
+    font-family: $font-mono;
+    color: rgba(#10b981, 0.9);
+
+    tr {
+      border-bottom: 1px solid #333;
+
+      &:nth-child(even) {
+        background-color: #1a1a1a;
+      }
+
+      &:hover {
+        background-color: #252526;
+      }
+    }
+
+    td {
+      padding: 0.625rem 1.25rem;
+      border-right: 1px solid #333;
+      white-space: nowrap;
+
+      &:last-child {
+        border-right: none;
+      }
+
+      .null-val {
+        color: $text-secondary;
+        font-style: italic;
+      }
+    }
+  }
+}
