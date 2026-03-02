@@ -85,7 +85,7 @@ Here is the sequence illustrating the query flow:
 8. **UI Render**: The dynamic `<table className="data-table">` is populated and displayed in the Results panel.
 
 ### Data-Flow Diagram Visual
-![CipherSQLStudio Data Flow Diagram](.DataFlow/dfd.png)
+![CipherSQLStudio Data Flow Diagram](./DataFlow/dfd.png)
 
 ---
 Developed as part of the CipherSQLStudio Assignment. Happy Querying! 🚀
